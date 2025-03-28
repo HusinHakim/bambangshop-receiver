@@ -68,16 +68,16 @@ You can install Postman via this website: https://www.postman.com/downloads/
     -   [x] Commit: `Implement list_all_as_string function in Notification repository.`
     -   [x] Write answers of your learning module's "Reflection Subscriber-1" questions in this README.
 -   **STAGE 3: Implement services and controllers**
-    -   [ ] Commit: `Create Notification service struct skeleton.`
-    -   [ ] Commit: `Implement subscribe function in Notification service.`
-    -   [ ] Commit: `Implement subscribe function in Notification controller.`
-    -   [ ] Commit: `Implement unsubscribe function in Notification service.`
-    -   [ ] Commit: `Implement unsubscribe function in Notification controller.`
-    -   [ ] Commit: `Implement receive_notification function in Notification service.`
-    -   [ ] Commit: `Implement receive function in Notification controller.`
-    -   [ ] Commit: `Implement list_messages function in Notification service.`
-    -   [ ] Commit: `Implement list function in Notification controller.`
-    -   [ ] Write answers of your learning module's "Reflection Subscriber-2" questions in this README.
+    -   [x] Commit: `Create Notification service struct skeleton.`
+    -   [x] Commit: `Implement subscribe function in Notification service.`
+    -   [x] Commit: `Implement subscribe function in Notification controller.`
+    -   [x] Commit: `Implement unsubscribe function in Notification service.`
+    -   [x] Commit: `Implement unsubscribe function in Notification controller.`
+    -   [x] Commit: `Implement receive_notification function in Notification service.`
+    -   [x] Commit: `Implement receive function in Notification controller.`
+    -   [x] Commit: `Implement list_messages function in Notification service.`
+    -   [x] Commit: `Implement list function in Notification controller.`
+    -   [x] Write answers of your learning module's "Reflection Subscriber-2" questions in this README.
 
 ## Your Reflections
 This is the place for you to write reflections:
@@ -107,3 +107,39 @@ When we need mutable static variables in Rust, we must use synchronization primi
 This is fundamentally different from Java, which allows mutable static variables but relies on the programmer to handle synchronization manually, potentially leading to thread-safety issues if not done correctly.
 
 #### Reflection Subscriber-2
+
+Have you explored things outside of the steps in the tutorial, for example: src/lib.rs? If not, explain why you did not do so. If yes, explain things that you have learned from those other parts of code.
+
+Yes, I did explore the src/lib.rs file to better understand the structure of the application. The lib.rs file contains several important components:
+- Configuration management via the APP_CONFIG lazy_static variable which loads environment variables
+- HTTP client setup with the REQUEST_CLIENT lazy_static variable
+- Error handling utilities with the compose_error_response function
+- The Result type alias that's used throughout the application
+
+Understanding these components was crucial for implementing the notification system properly. For instance, the APP_CONFIG provides methods to access configuration values like instance name and URLs, which are essential for creating subscriber requests and handling notifications. The error handling utilities also helped me understand how to properly handle and propagate errors in the Rocket framework context.
+
+Since you have completed the tutorial by now and have tried to test your notification system by spawning multiple instances of Receiver, explain how Observer pattern eases you to plug in more subscribers. How about spawning more than one instance of Main app, will it still be easy enough to add to the system?
+
+The Observer pattern significantly simplifies adding more subscribers to the system. Each Receiver instance (subscriber) can subscribe to specific product types independently, and the Publisher (subject) doesn't need to know the implementation details of each subscriber - it only needs to know their endpoint URLs to notify them.
+
+This decoupling makes it very easy to scale the system by adding more Receiver instances. Each new instance just needs to register itself with the Publisher by making a subscription request, and it will automatically start receiving notifications for the product types it's interested in.
+
+As for spawning multiple Publisher instances (Main apps), it would require additional coordination since subscribers would need to know about and register with each Publisher separately. The current implementation doesn't handle this scenario natively, but it could be extended to support it by:
+1. Implementing a registry service that maintains a list of all Publisher instances
+2. Having subscribers register with this registry service instead of individual Publishers
+3. The registry could then forward subscription requests to all relevant Publishers
+
+Have you tried to make your own Tests, or enhance documentation on your Postman collection? If you have tried those features, tell us whether it is useful for your work (it can be your tutorial work or your Group Project).
+
+Yes, I've enhanced the Postman collection by adding example responses and descriptions to each endpoint. This has been extremely valuable for testing the application and ensuring that all components work together correctly. For instance, I created test scenarios to verify:
+- Successfully subscribing to a product type
+- Receiving notifications when products of that type are created or updated
+- Unsubscribing and confirming that notifications are no longer received
+
+This approach to testing has been invaluable for my group project as well, as it helps us:
+1. Document our API behavior clearly for all team members
+2. Catch integration issues early in the development process
+3. Quickly verify changes without having to manually construct complex HTTP requests
+4. Automate some testing processes, saving time and reducing human error
+
+The combination of Postman collections and Rust's strong type system has significantly improved our development workflow by catching many potential issues before they make it to production.
