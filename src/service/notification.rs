@@ -1,8 +1,7 @@
 use std::thread;
 
 use rocket::http::Status;
-use rocket::log;
-use rocket::serde::json::to_string;
+
 use rocket::tokio;
 
 use bambangshop_receiver::{APP_CONFIG, Result, compose_error_response};
@@ -76,7 +75,7 @@ impl NotificationService {
         return match request {
             Ok(r) => match r.json::<SubscriberRequest>().await {
                 Ok(x) => Ok(x),
-                Err(y) => Err(compose_error_response(
+                Err(_y) => Err(compose_error_response(
                     Status::NotFound,
                     String::from("Already unsubscribed to the topic.")
                 ))
